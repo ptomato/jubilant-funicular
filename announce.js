@@ -4,12 +4,17 @@ globalThis.Intl = temporal.Intl;
 function announceSessions(sessions) {
   const here = Temporal.Now.timeZone();
   const now = Temporal.Now.instant();
-  const timeZoneName = now.toLocaleString(undefined, { timeZoneName: 'long' });
-  const formattedTimeZone = `UTC${here.getOffsetStringFor(now)} (${timeZoneName})`;
+
+  let formattedTimeZone;
+  try {
+    const nameFormatter = new Intl.DateTimeFormat(undefined, { timeZoneName: 'longGeneric' });
+    formattedTimeZone = nameFormatter.formatToParts(now).find(({ type }) => type === 'timeZoneName').value;
+  } catch (e) {
+    formattedTimeZone = here.id;  // Fall back to IANA time zone ID
+  }
+  const offsetString = here.getOffsetStringFor(now);
 
   const announcement = document.getElementById('announcement');
-  console.log(announcement);
-  console.log(document);
   announcement.innerHTML = `
     <ul>
       <li><strong>Dates</strong>:
@@ -22,7 +27,11 @@ function announceSessions(sessions) {
       </li>
       <li><strong>Timetable</strong>:
         <ul id="announcement-timetables">
-          <li>All times are in your browser's local time zone, <strong>${formattedTimeZone}</strong></li>
+          <li>
+            All times are in your browser's local time zone,
+            <strong>${formattedTimeZone}</strong>
+            (currently UTC${offsetString})
+          </li>
         </ul>
       </li>
     </ul>
@@ -32,11 +41,14 @@ function announceSessions(sessions) {
   const lengths = document.getElementById('announcement-lengths');
   const timetables = document.getElementById('announcement-timetables');
 
+  const dateFormatter = new Intl.DateTimeFormat(undefined, { dateStyle: 'long' });
+  const timeFormatter = new Intl.DateTimeFormat(undefined, { timeStyle: 'short' });
+  const weekdayFormatter = new Intl.DateTimeFormat(undefined, { weekday: 'long' });
+
   for (const { start, length } of sessions) {
-    const begin = Temporal.ZonedDateTime.from(start);
+    const begin = Temporal.ZonedDateTime.from(start).withTimeZone(here);
     const end = begin.add(length);
 
-    const dateFormatter = new Intl.DateTimeFormat(undefined, { dateStyle: 'long' });
     const dateAnnouncement = document.createElement('li')
     dateAnnouncement.textContent = dateFormatter.formatRange(begin, end);
     dates.append(dateAnnouncement);
@@ -46,23 +58,28 @@ function announceSessions(sessions) {
       smallestUnit: 'minutes',
     });
     const lengthAnnouncement = document.createElement('li');
+    const weekday = weekdayFormatter.format(begin);
+    lengthAnnouncement.textContent = `${weekday}: `;
     if (balancedLength.hours)
-      lengthAnnouncement.textContent = `${balancedLength.hours} h `;
+      lengthAnnouncement.textContent += `${balancedLength.hours} h `;
     if (balancedLength.minutes)
       lengthAnnouncement.textContent += `${balancedLength.minutes} m`;
     lengths.append(lengthAnnouncement);
 
-    const timeFormatter = new Intl.DateTimeFormat(undefined, { timeStyle: 'short' });
     const timetableAnnouncement = document.createElement('li');
-    timetableAnnouncement.textContent = timeFormatter.formatRange(begin, end);
+    const timetable = timeFormatter.formatRange(begin, end);
+    timetableAnnouncement.textContent = `${weekday}: ${timetable}`
     timetables.append(timetableAnnouncement);
   }
 }
 
 function printAgendaItemTimetables(items) {
+  const here = Temporal.Now.timeZone();
+
   const timeFormatter = new Intl.DateTimeFormat(undefined, { timeStyle: 'short' });
+
   for (const { id, start, length } of items) {
-    const begin = Temporal.ZonedDateTime.from(start);
+    const begin = Temporal.ZonedDateTime.from(start).withTimeZone(here);
     const end = begin.add(length);
 
     const timetableSpan = document.getElementById(`${id}-timetable`);
