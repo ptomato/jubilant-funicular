@@ -1,3 +1,6 @@
+globalThis.Temporal = temporal.Temporal;
+globalThis.Intl = temporal.Intl;
+
 function announceSessions(sessions) {
   const here = Temporal.Now.timeZone();
   const now = Temporal.Now.instant();
@@ -5,6 +8,8 @@ function announceSessions(sessions) {
   const formattedTimeZone = `UTC${here.getOffsetStringFor(now)} (${timeZoneName})`;
 
   const announcement = document.getElementById('announcement');
+  console.log(announcement);
+  console.log(document);
   announcement.innerHTML = `
     <ul>
       <li><strong>Dates</strong>:
