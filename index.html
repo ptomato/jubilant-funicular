@@ -14,5 +14,37 @@
   <li><a href="temporal-polyfill-0.4.2.js">temporal-polyfill-0.4.2.js</a></li>
 </ul>
 
+<hr/>
+
+<div id="announcement"></div>
+
+<hr/>
+
+<p>Test inline timetable: <span id="test-timetable"></span>
+
+<script src="temporal-polyfill-0.4.2.js"></script>
+<script src="announce.js"></script>
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+    announceSessions([
+      {
+        start: { year: 2022, month: 3, day: 24, hour: 13, timeZone: 'Europe/Madrid' },
+        length: { hours: 3, minutes: 50 },
+      },
+      {
+        start: { year: 2022, month: 3, day: 25, hour: 5, minute: 30, timeZone: 'Europe/Madrid' },
+        length: { hours: 1 },
+      },
+    ]);
+    printAgendaItemTimetables([
+      {
+        id: 'test',
+        start: { year: 2022, month: 3, day: 24, hour: 13, timeZone: 'Europe/Madrid' },
+        length: { minutes: 20 },
+      },
+    ]);
+  });
+</script>
+
 </body>
 </html>
