@@ -10,7 +10,7 @@
 <body>
 
 <ul>
-  <li><a href="announce.js">announce.js</a></li>
+  <li><a href="announce-0.0.1.js">announce-0.0.1.js</a></li>
   <li><a href="temporal-polyfill-0.4.3.js">temporal-polyfill-0.4.3.js</a></li>
 </ul>
 
@@ -22,29 +22,27 @@
 
 <p>Test inline timetable: <span id="test-timetable"></span>
 
-<script src="temporal-polyfill-0.4.3.js"></script>
-<script src="announce.js"></script>
 <script>
-  document.addEventListener('DOMContentLoaded', function () {
-    announceSessions([
-      {
-        start: { year: 2022, month: 3, day: 24, hour: 13, timeZone: 'Europe/Madrid' },
-        length: { hours: 3, minutes: 50 },
-      },
-      {
-        start: { year: 2022, month: 3, day: 25, hour: 5, minute: 30, timeZone: 'Europe/Madrid' },
-        length: { hours: 1 },
-      },
-    ]);
-    printAgendaItemTimetables([
-      {
-        id: 'test',
-        start: { year: 2022, month: 3, day: 24, hour: 13, timeZone: 'Europe/Madrid' },
-        length: { minutes: 20 },
-      },
-    ]);
-  });
+var sessions = [
+  {
+    start: { year: 2022, month: 3, day: 24, hour: 13, timeZone: 'Europe/Madrid' },
+    length: { hours: 3, minutes: 50 },
+  },
+  {
+    start: { year: 2022, month: 3, day: 25, hour: 5, minute: 30, timeZone: 'Europe/Madrid' },
+    length: { hours: 1 },
+  },
+];
+var agendaItemTimetables = [
+  {
+    id: 'test',
+    start: { year: 2022, month: 3, day: 24, hour: 13, timeZone: 'Europe/Madrid' },
+    length: { minutes: 20 },
+  },
+];
 </script>
+<script src="temporal-polyfill-0.4.3.js"></script>
+<script src="announce-0.0.1.js"></script>
 
 </body>
 </html>
